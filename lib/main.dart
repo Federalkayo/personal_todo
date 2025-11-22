@@ -20,7 +20,16 @@ class myApp extends StatefulWidget {
 class _myAppState extends State<myApp> {
 
   //list of Strings
+  List<String> displayedTodos = [];
   final List<String> _myTodos = ['Task 1','Task 2','Task 3'];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    displayedTodos = List.from(_myTodos);
+  }
 
   //function for dialog box to edit Todo list
   void editTask(int index){
@@ -90,6 +99,7 @@ class _myAppState extends State<myApp> {
               onPressed: () {
                 setState(() {
                   _myTodos.add(newTask);
+                  displayedTodos = List.from(_myTodos);
                 });
                 Navigator.of(context).pop();
               },
@@ -118,6 +128,7 @@ class _myAppState extends State<myApp> {
               onPressed: () {
                 setState(() {
                   _myTodos.removeAt(index);
+                  displayedTodos = List.from(_myTodos);
                 });
                 Navigator.of(context).pop();
               },
@@ -190,11 +201,30 @@ class _myAppState extends State<myApp> {
               ),
             ],
           ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search Task',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                )
+              ),
+              onChanged: (value) {
+                setState(() {
+                  displayedTodos = _myTodos
+                    .where((todo) => todo.toLowerCase().contains(value.toLowerCase()))
+                    .toList();
+                });
+              },
+            ),
+          ),
           Expanded(
             child: ListView.builder(
-              itemCount: _myTodos.length,
+              itemCount: displayedTodos.length,
               itemBuilder: (context, index) {
-                final todo = _myTodos[index];
+                final todo = displayedTodos[index];
             
                 return ListTile(
                   leading: Icon(Icons.task),
@@ -218,7 +248,7 @@ class _myAppState extends State<myApp> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(onPressed: addTask, child: Icon(Icons.add),backgroundColor: Colors.grey, hoverColor: Colors.amber,),
+      floatingActionButton: FloatingActionButton(onPressed: addTask,backgroundColor: Colors.grey, hoverColor: Colors.amber, child: Icon(Icons.add),),
     );
   }
 }
